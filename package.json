@@ -1,14 +1,20 @@
 {
+  "name": "wrunity",
+  "version": "0.0.5",
   "author": {
     "name": "petereitz"
   },
+  "description": "Connection manager for Webroot's Unity API",
   "bundleDependencies": false,
   "dependencies": {
     "moment": "^2.22.1",
     "request": "^2.87.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petereitz/wrunity"
+  },
   "deprecated": false,
-  "description": "Connection manager for Webroot's Unity API",
   "keywords": [
     "webroot",
     "unity",
@@ -17,9 +23,7 @@
   ],
   "license": "MIT",
   "main": "index.js",
-  "name": "wrunity",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "version": "0.0.5"
+  }
 }
