@@ -1,0 +1,25 @@
+{
+  "author": {
+    "name": "petereitz"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "moment": "^2.22.1",
+    "request": "^2.87.0"
+  },
+  "deprecated": false,
+  "description": "Connection manager for Webroot's Unity API",
+  "keywords": [
+    "webroot",
+    "unity",
+    "api",
+    "connection"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "wrunity",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.5"
+}
