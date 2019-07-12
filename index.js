@@ -3,34 +3,115 @@
 
 // ---SETUP---
 // unity config
-const uC = {
-  urlBase: 'https://unityapi.webrootcloudav.com',
-  auth: {
-    tokenURLSegment: '/auth/token',
-    body: {
-      scope: '*',
-      grant_type: 'password'
-    }
+const config = {
+  url: 'https://unityapi.webrootcloudav.com/auth/token',
+  body: {
+    scope: '*',
+    grant_type: 'password'
+  },
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded'
   }
 }
 
-// requests
-const request = require('request');
 
-// moment
-const moment = require('moment');
-
+const axios = require('axios');
+const qs = require('qs');
 
 
 // ---FUNCTIONS---
 // now
 function getNow(){
-  return Math.floor(Date.now() / 1000);
+  return Math.floor(Date.now());
 }
 
 
 
 // ---BUSINESS---
+
+class Unity {
+  constructor(apiKey, apiSecret, username, password){
+    this.ready = false;
+    this.req = config;
+    this.auth = {
+      key: apiKey,
+      secret: apiSecret
+    }
+    this.req.body.username = username;
+    this.req.body.password = password;
+    this.req.headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    this.req.headers.Authorization = "Basic " + Buffer.from(`${this.auth.key}:${this.auth.secret}`).toString('base64');
+
+    this.updateToken()
+      .then(()) => {
+        this.ready = true;
+      })
+      .catch(err => console.log(err))
+  }
+
+  updateToken(){
+    return new Promise((resolve, reject)=>{
+      // don't loose yourself
+      const self = this;
+      // be safe
+      try{
+
+        // is the token stale?
+        if(getNow() > self.tokenExp){
+
+          const opts = {
+            method: 'POST',
+            headers: this.req.headers,
+            data: qs.stringify(this.req.body),
+            url: this.req.url
+          }
+
+          axios(opts)
+            .then(res => {
+              self.token = res.data.access_token;
+              self.refresh = res.data.refresh_token;
+              self.tokenExp = getNow() + (res.data.expires_in * 1000);
+              resolve();
+            })
+            .catch(err => console.log(err))
+        } else {
+          resolve();
+        }
+      } catch(err) {
+        reject(err);
+      }
+    });
+  }
+
+
+  getToken(){
+    return new Promise((resolve, reject)=>{
+      // don't loose yourself
+      const self = this;
+      // be safe
+      try{
+        // is the token ready?
+        if(self.ready){
+          resolve(self.token);
+        } else {
+          setTimeout(function(){
+            self.getToken()
+              .then(token => resolve(token))
+              .catch(err => reject(err));
+          }, 1000);
+        }
+      }catch(err){
+        reject(err);
+      }
+    });
+  }
+
+}
+/*
 // constructor
 var Unity = function() {
   this.ready = false;
@@ -55,6 +136,8 @@ Unity.prototype.connect = function(gsmKey, apiKey, apiSecret, username, password
     uC.auth.secret = apiSecret;
     uC.auth.body.username = username;
     uC.auth.body.password = password;
+    uC.auth.body.grant_type = "password";
+    uC.auth.body.scope = '*'
 
     this.setAuthToken()
       .then(res => {
@@ -79,13 +162,11 @@ Unity.prototype.setAuthToken = function() {
       // options
       let options = {
         url: `${uC.urlBase}${uC.auth.tokenURLSegment}`,
-        auth : {
-          'user': uC.auth.key,
-          'password': uC.auth.secret,
-        },
+
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic Y2xpZW50X0Y1Q3pwODEwQG9wcG9yLmNvbTpvZClGI3kkXiokdiN3UHk='
         },
         form: uC.auth.body
       }
@@ -105,7 +186,7 @@ Unity.prototype.setAuthToken = function() {
           self.token = data.access_token;
           self.tokenExpireDate = getNow() + data.expires_in;
 
-          resolve('Success');
+          resolve(data);
 
         }
       });
@@ -235,6 +316,6 @@ Unity.prototype.getSiteThreatHistory60 = function(siteID) {
 
   });
 };
+*/
 
-
-module.exports = new Unity;
+module.exports = Unity;

@@ -18,3 +18,8 @@ unity.connect(<gsmKey>, <apiKey>, <apiSecret>, <username>, <password>)
       .catch(err => console.log(err));
   });
 ```
+
+### Changelog
+- **1.0.0**
+  - [axios](https://github.com/axios/axios) based rewrite
+  - Shift focus to managing authentication token.
