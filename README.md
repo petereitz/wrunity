@@ -1,22 +1,34 @@
 ## Overview
 
-A Node.js module for Webroot's Unity API.
+Manage authentication tokens for Webroot's Unity API.
 
 
 ### Install
 
+```
     npm -i wrunity
-
+```
 
 ### Use
+Call a new `wrunity` object with your api and console keys:
+
 ```javascript
-const unity = require('wrUnity');
-unity.connect(<gsmKey>, <apiKey>, <apiSecret>, <username>, <password>)
-  .then(() => {
-    unity.makeRequest('https://unityapi.webrootcloudav.com/service/api/console/gsm/your-gsmKey/sites', 'get')
-      .then(res => console.log(res))
-      .catch(err => console.log(err));
-  });
+
+const Unity = require('wrunity');
+const unity = new Unity(<apiKey>, <apiSecret>, <consoleUsername>, <consolePassword>);
+
+// grab a current auth token
+unity.getToken()
+  .then(result => console.log(result))
+  .catch(err => console.log(err))
+
+// come back any time
+setInterval(function(){}
+  unity.getToken()
+    .then(result => console.log(result))
+    .catch(err => console.log(err))
+}, 150000)
+
 ```
 
 ### Changelog
